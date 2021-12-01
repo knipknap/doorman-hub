@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Support{% endblock %}
+{% block style %}
+{{ super() }}
+#support_form {
+ text-align: center;
+}
+
+#support_form ul {
+ display: table;
+ width: 100%;
+ text-align: left;
+ list-style-type:none;
+ list-style-position:outside;
+ margin:0;
+ padding:0;
+ border-collapse: separate;
+ border-spacing: 10px;
+}
+
+#support_form li {
+ display: table-row;
+ margin: 6px 0;
+}
+
+#support_form .cell {
+ display: table-cell;
+ vertical-align: top;
+ padding: 6px 6px 6px 0;
+}
+
+#support_form #subject,
+#support_form #body {
+ border-width: 1px;
+ width: 100%;
+ margin: 0;
+}
+{% endblock %}
+{% block script %}
+$("#send_button").click(function() {
+    var agree = $("#agree_sharing").is(":checked");
+    if (!agree) {
+        warnbox("Please confirm that we may include debug info with your support request.")
+        return;
+    }
+    var subject = $("#subject").val();
+    var body = $("#body").val();
+    spiffhub.call('utility/1.0/message/send',
+                  {'subject': subject, 'body': body},
+                  function(data) {
+                      infobox(data.msg);
+                  },
+                  on_error);
+});
+{% endblock %}
+{% block nav_support_class %}active{% endblock %}
+{% block content_middle %}
+<form id="support_form">
+        <ul>
+                <li>
+                        <label for="subject" class="cell">Subject:</label>
+                        <input id="subject" class="cell" type="text" required/>
+                </li>
+                <li>
+                        <label for="body" class="cell">Text:</label>
+                        <textarea id="body" class="cell" rows="15" cols="80" required></textarea>
+                </li>
+                <li>
+                        <span class="cell"></span>
+                        <span class="cell" id="hint">
+                        Your support request will automatically include information on the SpiffHub that you are using, as well as debug information such as log files.
+                        </span>
+                </li>
+                <li>
+                        <span class="cell"></span>
+                        <span class="cell">
+                                <input id="agree_sharing" type="checkbox" required/>
+                                <label id="agree_sharing_label" for="agree_sharing">I agree to sending debug information with my message.</label>
+                        </span>
+                </li>
+                <li>
+                        <span class="cell"></span>
+                        <span class="cell">
+                        <a href="#" id="send_button" class="button">Send Message</a>
+                        </span>
+                </li>
+        </ul>
+</form>
+{% endblock %}

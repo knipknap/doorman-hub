@@ -1,0 +1,131 @@
+{% set list_api="nfc/1.0/tag/list" %}
+{% extends "editable_list.html" %}
+{% block title %}Tags{% endblock %}
+{% set item_name = "tag" %}
+{% set items_name = "tags" %}
+{% block style %}
+{{ super() }}
+#edit_tag_id,
+#edit_tag_action_id {
+ width:95%;
+ display:block;
+}
+{% endblock %}
+{% block script %}
+{{ super() }}
+function delete_all(on_success, on_error) {
+    spiffhub.call('nfc/1.0/tag/remove_all',
+	          undefined,
+	          on_success, on_error);
+};
+
+function delete_selected(on_success, on_error) {
+    var id_list = $('#result_table input[type=checkbox]:checked').map(function(){
+       return $(this).val();
+    }).get();
+    spiffhub.call('nfc/1.0/tag/remove',
+	          {'id': id_list},
+	          on_success, on_error);
+};
+
+function get_data_from_dialog(dialog) {
+  var tag_id = dialog.find("#edit_tag_id").val();
+  var action_id = dialog.find("#select_action").val();
+  return {'id': tag_id,
+          'action_id': action_id}
+};
+
+function make_edit_dialog() {
+  var dialog = $("#dialog_template").clone().insertBefore("#dialog_template");
+  dialog.attr("id", "edit_dialog");
+  dialog.find("#edit_tag_id").prop("readonly", true);
+  dialog.find("#edit_tag_id").css("width", "auto");
+  dialog.find("#edit_tag_id").css("display", "inline");
+  dialog.find("#edit_tag_id").before($('<span>').text("Tag ID: "));
+
+  var submit = dialog.find("input[type=submit]");
+  submit.val("Save changes");
+  submit.click(function () {
+    var data = get_data_from_dialog(dialog);
+    spiffhub.call('nfc/1.0/tag/edit',
+                  data,
+                  function() {
+                    dialog.dialog('close');
+                    refresh_list();
+                  },
+                  on_error);
+  });
+
+  dialog.find(":text,:password").each(function(index, value) {
+    add_bglabel($(this));
+  });
+
+  update_action_selector(dialog);
+  return dialog;
+};
+
+function update_action_selector(dialog, success_cb) {
+  var sel = dialog.find('#select_action');
+  spiffhub.call('action/1.0/action/list',
+                {},
+                function(data) {
+                    sel.empty();
+                    for (var i=0; i<data.list.length; i++) {
+                        var option = $('<option></option>');
+                        option.val(data.list[i].id);
+                        option.text(data.list[i].name);
+                        sel.append(option);
+                    }
+                    if (success_cb)
+                        success_cb();
+                },
+	        on_error);
+};
+
+function addrow(tag) {
+  var checkbox = $("<input type='checkbox' class='row_selector'/>");
+  checkbox.change(update_delete_button);
+  checkbox.val(tag.id);
+  $("#result_table").append(
+      "<tr class='result_row'>" +
+	"<td></td>" +
+        "<td>" + tag.id + "</td>" +
+        "<td>" + tag.action_name + "</td>" +
+      "</tr>");
+  $("#result_table tr:last td:first").append(checkbox);
+  $("#result_table tr:last td:not(:first)").click(function() {
+    var dialog = $("#edit_dialog");
+    dialog.find("#edit_tag_id").val(tag.id);
+    update_action_selector(dialog, function() {
+      dialog.find("#select_action").val(tag.action_id);
+    });
+    dialog.find("#edit_tag_id").trigger('input');
+    dialog.dialog({'title': "Edit Tag", 'width':'30em', 'max-width':'90%'}).show();
+  });
+};
+
+var dialog = make_add_dialog("Add a new tag", "nfc/1.0/tag/add");
+update_action_selector(dialog);
+make_edit_dialog();
+{% endblock %}
+{% block nav_tags_class %}active{% endblock %}
+{% block content_middle %}
+<table id="result_table">
+	<tr><th><input id="select_all" type="checkbox" class="row_selector"/></th><th>Tag ID</th><th>Action</th></tr>
+	<tr class="spacer"><td></td><td></td><td></td></tr>
+</table>
+
+<div class="dialog" id="dialog_template">
+<ul>
+	<li>
+	<input type='text' id="edit_tag_id" title="Tag ID" name='id' required/>
+	</li>
+	<li>
+	<select id="select_action" title="Action" name='action'></select>
+	</li>
+	<li>
+	<input type='submit'/>
+	</li>
+</ul>
+</div>
+{% endblock %}

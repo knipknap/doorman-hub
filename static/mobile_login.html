@@ -1,0 +1,7 @@
+<form name="loginForm" ng-controller="loginController">
+    <label>User: <input type="text" name="name" ng-model="name"></label>
+    <span ng-show="loginForm.name.$dirty && !name">A username is required</span>
+    
+    <label>Password: <input type="password" ng-model="password"></label>
+    <span ng-show="login_failed">Invalid user or password</span>
+</form>

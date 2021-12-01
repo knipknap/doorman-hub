@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block style %}
+html {
+ background: #7ae;
+}
+
+#nouser_background {
+ position: absolute;
+ left: 0px;
+ top: 0px;
+ min-height:50%;
+ background-color: #58c;
+ width:100%;
+ z-index:-1;
+}
+
+#nouser {
+ margin-top:6em;
+ text-align:center;
+ min-height:500px;
+ background:transparent url(server.svg) no-repeat left;
+ background-size:362px 500px;
+}
+{% endblock %}
+{% block main %}
+<div id="nouser_background"></div>
+<div id="nouser">
+{% block nouser_content %}
+{% endblock %}
+</div>
+{% endblock %}
+

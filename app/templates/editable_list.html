@@ -1,0 +1,117 @@
+{% extends "list.html" %}
+{% block style %}
+{{ super() }}
+#delete_button {
+ opacity:0;
+}
+{% endblock %}
+{% block script %}
+{{ super() }}
+function update_delete_button_text() {
+  if ($("#select_all").is(':checked'))
+      $("#delete_button").text('Delete all {{ items_name }}');
+  else
+      $("#delete_button").text('Delete selected {{ items_name }}');
+};
+
+function update_delete_button() {
+  if ($("#result_table .row_selector").not('#select_all').not(':checked').length > 0)
+      $("#select_all").prop('checked', false);
+
+  if ($("#result_table .row_selector").is(":checked")) {
+      update_delete_button_text();
+      $("#delete_button").animate({opacity: 1}, {
+         queue: false,
+         duration: 500,
+        });
+  }
+  else {
+      $("#delete_button").animate({opacity: 0}, {
+         queue: false,
+         duration: 500,
+         complete: function(){
+           update_delete_button_text();
+         }
+        });
+  }
+};
+
+function make_add_dialog(title, api_call) {
+  var dialog = $("#dialog_template").clone().insertBefore("#dialog_template");
+  dialog.attr("id", "add_dialog");
+  dialog.attr("title", title);
+
+  var submit = dialog.find("input[type=submit]");
+  submit.val("Add");
+  submit.click(function() {
+    var data = get_data_from_dialog(dialog);
+    spiffhub.call(api_call,
+                  data,
+                  function() {
+                    dialog.dialog('destroy').remove();
+                    make_add_dialog(title, api_call);
+                    refresh_list();
+                  },
+                  on_error);
+  });
+
+  dialog.find(":text,:password").each(function(index, value) {
+    add_bglabel($(this));
+  });
+
+  return dialog;
+};
+
+$("#select_all").change(function() {
+  var checkboxes = $("#result_table .row_selector").not('#select_all');
+  checkboxes.prop('checked', this.checked);
+  update_delete_button();
+});
+
+$("#add_button").click(function() {
+  $("#add_dialog").dialog({'width':'30em', 'max-width':'90%'}).show();
+});
+
+$("#delete_button").click(function() {
+  $("#delete_dialog").dialog({'width':'30em', 'max-width':'90%'}).show();
+});
+
+$("#delete_dialog_no").click(function() {
+  $("#delete_dialog").dialog("close");
+});
+
+function after_delete() {
+  refresh_list(function() {
+    update_delete_button();
+  });
+  $("#delete_dialog").dialog("close");
+};
+
+$("#delete_dialog_yes").click(function() {
+    if ($("#select_all").is(':checked')) {
+        delete_all(after_delete,
+                   function(status, msg) {
+                       errorbox(msg);
+                       after_delete();
+                   });
+        return;
+    }
+
+    delete_selected(after_delete,
+                    function(status, msg) {
+                        errorbox(msg);
+                        after_delete();
+                    });
+});
+
+$("#delete_button").fadeTo(0, 0);
+{% endblock %}
+{% block content_top %}
+<a href="#add_button" id="add_button" class="button">Add a new {{ item_name }}</a>
+<a href="#delete_button" id="delete_button" class="button">Delete selected {{ items_name }}</a>
+<div class="dialog" id="delete_dialog" title="Confirm {{ item_name }} deletion">
+<span>Are you sure that you want to delete all selected {{ items_name }}?</span>
+<input type='button' id="delete_dialog_yes" value='Delete selected {{ items_name }}'/>
+<input type='button' id="delete_dialog_no" value='Rather not'/>
+</div>
+{% endblock %}

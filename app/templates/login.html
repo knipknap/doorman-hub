@@ -1,0 +1,80 @@
+{% extends "base_nouser.html" %}
+{% block style %}
+{{ super() }}
+#login_form {
+ display: inline-block;
+ margin-top: 6em;
+ padding:1em 0;
+ text-align: left;
+ height: 100%;
+ max-width: 30em;
+}
+
+#login_form #logo {
+}
+
+#login_form span#logininfo {
+ display:block;
+ font-size: 1em;
+ margin: 0 auto;
+ padding-top: 3em;
+ padding-bottom: .7em;
+}
+
+#login_form input {
+ border: 1px solid #777;
+ padding:.6em;
+ margin: .2em;
+}
+
+#login_form input[type=text],
+#login_form input[type=password] {
+ width:95%;
+}
+
+#login_form input[type=submit] {
+ border-radius: .5em;
+ padding-left: 1em;
+ padding-right: 1em;
+}
+
+#login_form #keeploggedin {
+ display:block;
+ padding-top:.5em;
+}
+{% endblock %}
+{% block script %}
+$("#login_form").submit(function(event) {
+  event.preventDefault();
+  var email = $("#login_form input[name='username']").val();
+  var password = $("#login_form input[name='password']").val();
+  var expires = $("#login_form input[name='permalogin']").is(':checked') ? 28 : null;
+  var inputs = $("#login_form input");
+  inputs.prop('disabled', true);
+  $("#logininfo").text("Logging in...");
+
+  spiffhub.login(email,
+                 password,
+                 expires,
+                 function(email) {
+                   $("#logininfo").text("Login successful.");
+                   window.location.href = '/home';
+                 },
+                 function(status, msg) {
+                   $("#logininfo").text(msg);
+                   inputs.prop('disabled', false);
+                 });
+});
+{% endblock %}
+{% block nouser_content %}
+<form id="login_form">
+	<div id="logo">
+		<h1><a href="home"><span id="company">Spiff</span><span id="product">Hub</span></a></h1>
+	</div>
+	<span id="logininfo">Log me in to this Spiff Hub</span>
+	<input type="text" name="username" required/>
+	<input type="password" name="password" required/>
+	<input type="submit" value="Log in"/>
+	<label id="keeploggedin"><input type="checkbox" name="permalogin"/>Keep me logged in</label>
+</form>
+{% endblock %}

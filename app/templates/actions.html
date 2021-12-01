@@ -1,0 +1,205 @@
+{% set list_api="action/1.0/action/list" %}
+{% extends "editable_list.html" %}
+{% block title %}Actions{% endblock %}
+{% set item_name = "action" %}
+{% set items_name = "actions" %}
+{% block style %}
+{{ super() }}
+#edit_action_id,
+#edit_action_name,
+#edit_action_description {
+ width:95%;
+ display:block;
+}
+
+.action_description {
+ display: block;
+ font-size: .9em;
+ font-style: italic;
+}
+{% endblock %}
+{% block script %}
+{{ super() }}
+function delete_all(on_success, on_error) {
+    spiffhub.call('action/1.0/action/remove_all',
+	          undefined,
+	          on_success, on_error);
+};
+
+function delete_selected(on_success, on_error) {
+    var id_list = $('#result_table input[type=checkbox]:checked').map(function(){
+       return $(this).val();
+    }).get();
+    spiffhub.call('action/1.0/action/remove',
+	          {'id': id_list},
+	          on_success, on_error);
+};
+
+function get_data_from_dialog(dialog) {
+  var name = dialog.find("#edit_action_name").val();
+  var description = dialog.find("#edit_action_description").val();
+  var device_id = dialog.find("#select_action_device").val();
+  var actor_id = dialog.find("#select_action_actor").val();
+  return {'name': name,
+          'description': description,
+          'device_id': device_id,
+          'actor_id': actor_id,
+          'params': {'on': true, 'seconds': 3}};
+};
+
+function init_dialog_callbacks(dialog) {
+  dialog.find('#select_action_device').change(function() { update_actor_selector(dialog) });
+  update_device_selector(dialog);
+};
+
+function make_edit_dialog() {
+  var dialog = $("#dialog_template").clone().insertBefore("#dialog_template");
+  dialog.attr("id", "edit_dialog");
+
+  var submit = dialog.find("input[type=submit]");
+  submit.val("Save changes");
+  submit.click(function () {
+    var data = get_data_from_dialog(dialog);
+    data.id = dialog.data("action_id");
+    spiffhub.call('action/1.0/action/edit',
+                  data,
+                  function() {
+                    dialog.dialog('close');
+                    refresh_list();
+                  },
+                  on_error);
+  });
+
+  dialog.find(":text,:password").each(function(index, value) {
+    add_bglabel($(this));
+  });
+
+  init_dialog_callbacks(dialog);
+  return dialog;
+};
+
+function update_device_selector(dialog, success_cb) {
+  var sel = dialog.find('#select_action_device');
+  spiffhub.call('hardware/1.0/device/list',
+                undefined,
+                function(data) {
+                    sel.empty();
+                    for (var i=0; i<data.list.length; i++) {
+                        var option = $('<option></option>');
+                        option.val(data.list[i].id);
+                        option.text(data.list[i].name);
+                        sel.append(option);
+                    }
+                    update_actor_selector(dialog);
+                    if (success_cb)
+                        success_cb();
+                },
+                on_error);
+};
+
+function update_actor_selector(dialog, success_cb) {
+  var sel = dialog.find('#select_action_actor');
+
+  var device_id = dialog.find('#select_action_device').val();
+  if (!device_id) {
+    sel.hide('fast');
+    return;
+  }
+  sel.show('fast');
+  spiffhub.call('hardware/1.0/actor/list',
+                {'device_id': device_id},
+                function(data) {
+                    sel.empty();
+                    for (var i=0; i<data.actors.length; i++) {
+                        var option = $('<option></option>');
+                        option.val(data.actors[i].id);
+                        option.text(data.actors[i].name);
+                        sel.append(option);
+                    }
+                    if (success_cb)
+                        success_cb();
+                },
+                on_error);
+};
+
+function action_start_link(action) {
+  link = $("<a href='#'>Click to start</a>");
+  link.click(function() {
+    spiffhub.call('action/1.0/action/start',
+                  {'id': action.id},
+                  function(data) {
+                  },
+                  on_error);
+  });
+  return link;
+};
+
+function addrow(action) {
+  var checkbox = $("<input type='checkbox' class='row_selector'/>");
+  checkbox.change(update_delete_button);
+  checkbox.val(action.id);
+  $("#result_table").append(
+      "<tr class='result_row'>" +
+	"<td></td>" +
+        "<td>" +
+           "<span class='action_name'>" + action.name + " </span>" + 
+           "<span class='action_description'>" + action.description + "</span>" + 
+        "</td>" +
+        "<td></td>" +
+        "<td>" + action.device_id + "</td>" +
+        "<td>" + action.actor_id + "</td>" +
+      "</tr>");
+  $("#result_table tr:last td:first").append(checkbox);
+  $("#result_table tr:last td:nth-child(3)").append(action_start_link(action));
+  $("#result_table tr:last td:nth-child(2)").click(function() {
+    var dialog = $("#edit_dialog");
+    dialog.data("action_id", action.id);
+    dialog.find("#edit_action_name").val(action.name);
+    dialog.find("#edit_action_description").val(action.description);
+    update_device_selector(dialog, function() {
+      dialog.find("#select_action_device").val(action.device_id);
+      update_actor_selector(dialog, function() {
+        dialog.find("#select_action_actor").val(action.actor_id);
+      });
+    });
+    dialog.find("#edit_action_name,#edit_action_description").each(function(index, value) {
+      $(this).trigger('input');
+    });
+    dialog.dialog({'title': "Edit " + action.name, 'width':'30em', 'max-width':'90%'}).show();
+  });
+};
+
+var dialog = make_add_dialog("Add a new action", "action/1.0/action/add");
+init_dialog_callbacks(dialog)
+
+make_edit_dialog();
+{% endblock %}
+{% block nav_actions_class %}active{% endblock %}
+{% block content_middle %}
+<table id="result_table">
+	<tr><th><input id="select_all" type="checkbox" class="row_selector"/></th><th>Action</th><th>Start</th><th>Device</th><th>Actor</th></tr>
+	<tr class="spacer"><td></td><td></td><td></td><td></td><td></td></tr>
+</table>
+
+<div class="dialog" id="dialog_template">
+<ul>
+	<li>
+	<input type='text' id="edit_action_name" title="Action name"
+               name='name' maxlength="35" required/>
+	</li>
+	<li>
+	<input type='text' id="edit_action_description" title="Action description"
+               name='name' maxlength="200" required/>
+	</li>
+	<li>
+	<select id="select_action_device" title="Device" name='device'></select>
+	</li>
+	<li>
+	<select id="select_action_actor" title="Actor" name='actor'></select>
+	</li>
+	<li>
+	<input type='submit'/>
+	</li>
+</ul>
+</div>
+{% endblock %}

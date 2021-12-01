@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+
+	<title>{% block title %}{% endblock %}{% if self.title() %} - {% endif %}Spiff Hub</title>
+	<meta name="description" content="Spiff Doorman Admin Web Interface">
+	<meta name="author" content="Spiff">
+	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/redmond/jquery-ui.min.css">
+	<link rel="stylesheet" href="{{ config.MEDIA_DIR }}/styles.css?v=1.0">
+
+	<!--[if lt IE 9]>
+	<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+        <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+        <script src="{{ config.MEDIA_DIR }}/cookie.js"></script>
+        <script src="{{ config.MEDIA_DIR }}/spiffhub.js"></script>
+        <script src="{{ config.MEDIA_DIR }}/util.js"></script>
+        <script src="{{ config.MEDIA_DIR }}/pageindex.js"></script>
+<script>
+$(document).ready(function(){
+  var spiffhub = new SpiffHub('api');
+  var epp = 25; // entries per page in list views.
+
+  function on_error(status, msg) {
+    errorbox(msg);
+  };
+
+  $("#logout_button").click(
+    function() {
+      spiffhub.logout(
+        function() {
+          window.location.replace("/");
+        },
+        on_error);
+    }
+  );
+
+{% block script %}
+{% endblock %}
+});
+</script>
+<style type="text/css">
+{% block style %}{% endblock %}
+</style>
+</head>
+
+<body>
+<div id="main">
+{% block main %}
+    <div id="header">
+	{% block header %}
+		<div id="logo">
+			<h1><a href="home"><span id="company">Spiff</span><span id="product">Hub</span></a></h1>
+		</div>
+		<nav>
+			<ul>
+				<li class="{% block nav_events_class %}{% endblock %}"><a href="home"><img src="{{ config.MEDIA_DIR }}/home.png" width="24" height="24"/></a></li>
+				<li class="{% block nav_users_class %}{% endblock %}"><a href="users">Users</a></li>
+				<li class="{% block nav_actions_class %}{% endblock %}"><a href="actions">Actions</a></li>
+				<li class="{% block nav_devices_class %}{% endblock %}"><a href="devices">Devices</a></li>
+				<li class="{% block nav_tags_class %}{% endblock %}"><a href="tags">Tags</a></li>
+				<li class="{% block nav_about_class %}{% endblock %}"><a href="about">About</a></li>
+				<li class="{% block nav_support_class %}{% endblock %}"><a href="support">Support</a></li>
+				<li class="{% block nav_logout_class %}{% endblock %}">
+					<a id="logout_button" href="#" ><img src="{{ config.MEDIA_DIR }}/logout.png" width="20" height="20"/></a>
+				</li>
+			</ul>
+		</nav>
+	{% endblock %}
+    </div>
+    <div id="messages">
+        <span id="info"></span>
+    </div>
+    <div id="content">
+	{% block content_top %}
+	{% endblock %}
+	{% block content_middle %}
+	{% endblock %}
+	{% block content_bottom %}
+	{% endblock %}
+    </div>
+{% endblock %}
+</div>
+<div id="footer">
+&copy;2015 by Spiff<sup>&reg;</sup>. All rights reserved.
+</div>
+</body>
+</html>

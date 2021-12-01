@@ -1,0 +1,37 @@
+{% set list_api="hardware/1.0/device/list" %}
+{% extends "list.html" %}
+{% block title %}Devices{% endblock %}
+{% block style %}
+{% endblock %}
+{% block script %}
+{{ super() }}
+
+function get_names(list) {
+  if (list.length == 0)
+    return '<i>none</i>';
+  var result = list[0].name;
+  for (var i=1; i<list.length; i++)
+    result += ', ' + list[i].name;
+  return result;
+};
+
+function addrow(device) {
+  $("#result_table").append(
+      "<tr class='result_row'>" +
+        "<td>" + device.interface + "</td>" +
+        "<td>" + device.name + "</td>" +
+        "<td>" + device.id + "</td>" +
+        "<td></td>" +
+        "<td></td>" +
+      "</tr>");
+  $("#result_table tr:last td:nth-child(4)").append(get_names(device.sensors));
+  $("#result_table tr:last td:nth-child(5)").append(get_names(device.actors));
+};
+{% endblock %}
+{% block nav_devices_class %}active{% endblock %}
+{% block content_middle %}
+<table id="result_table">
+	<tr><th>Interface</th><th>Device</th><th>ID</th><th>Sensors</th><th>Actors</th></tr>
+	<tr class="spacer"><td></td><td></td><td></td><td></td></tr>
+</table>
+{% endblock %}

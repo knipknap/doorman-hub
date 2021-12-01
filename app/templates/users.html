@@ -1,0 +1,132 @@
+{% set list_api="auth/1.0/user/list" %}
+{% extends "editable_list.html" %}
+{% block title %}Users{% endblock %}
+{% set item_name = "user" %}
+{% set items_name = "users" %}
+{% block style %}
+{{ super() }}
+#edit_user_email,
+#edit_user_full_name,
+#edit_user_password {
+ width:95%;
+ display:block;
+}
+{% endblock %}
+{% block script %}
+{{ super() }}
+function delete_all(on_success, on_error) {
+    spiffhub.call('auth/1.0/user/remove_all',
+	          undefined,
+	          on_success, on_error);
+};
+
+function delete_selected(on_success, on_error) {
+    var email_list = $('#result_table input[type=checkbox]:checked').map(function(){
+       return $(this).val();
+    }).get();
+    spiffhub.call('auth/1.0/user/remove',
+	          {'email': email_list},
+	          on_success, on_error);
+};
+
+function get_data_from_dialog(dialog) {
+  var email = dialog.find("#edit_user_email").val();
+  var full_name = dialog.find("#edit_user_full_name").val();
+  var password = dialog.find("#edit_user_password").val();
+  var is_active = dialog.find("#edit_user_is_active").is(':checked');
+  var is_admin = dialog.find("#edit_user_is_admin").is(':checked');
+  return {'email': email,
+          'full_name': full_name,
+          'password': password,
+          'is_active': is_active,
+          'is_admin': is_admin};
+};
+
+function make_edit_dialog() {
+  var dialog = $("#dialog_template").clone().insertBefore("#dialog_template");
+  dialog.attr("id", "edit_dialog");
+
+  var submit = dialog.find("input[type=submit]");
+  submit.val("Save changes");
+  submit.click(function () {
+    var data = get_data_from_dialog(dialog);
+    data.id = dialog.data("user_id");
+    spiffhub.call('auth/1.0/user/edit',
+                  data,
+                  function() {
+                    dialog.dialog('destroy').remove();
+                    make_edit_dialog();
+                    refresh_list();
+                  },
+                  on_error);
+  });
+
+
+  dialog.find(":text,:password").each(function(index, value) {
+    add_bglabel($(this));
+  });
+
+  return dialog;
+};
+
+function addrow(user) {
+  var checkbox = $("<input type='checkbox' class='row_selector'/>");
+  checkbox.change(update_delete_button);
+  checkbox.val(user.email);
+  $("#result_table").append(
+      "<tr class='result_row'>" +
+	"<td></td>" +
+        "<td>" + user.email + "</td>" +
+        "<td>" + user.full_name + "</td>" +
+        "<td>" + (user.is_admin ? "yes": "no") + "</td>" +
+        "<td>" + (user.is_active ? "yes": "no") + "</td>" +
+      "</tr>");
+  $("#result_table tr:last td:first").append(checkbox);
+  $("#result_table tr:last td:not(:first)").click(function() {
+    var dialog = $("#edit_dialog");
+    dialog.data("user_id", user.id);
+    dialog.find("#edit_user_email").val(user.email);
+    dialog.find("#edit_user_full_name").val(user.full_name);
+    dialog.find("#edit_user_password").val("Password (unchanged)");
+    dialog.find("#edit_user_is_active").prop("checked", user.is_active);
+    dialog.find("#edit_user_is_admin").prop("checked", user.is_admin);
+    dialog.find("#edit_user_email,#edit_user_full_name").each(function(index, value) {
+      $(this).trigger('input');
+    });
+    dialog.dialog({'title': "Edit " + user.email, 'width':'30em', 'max-width':'90%'}).show();
+  });
+};
+
+make_add_dialog("Add a new user", "auth/1.0/user/add");
+make_edit_dialog();
+{% endblock %}
+{% block nav_users_class %}active{% endblock %}
+{% block content_middle %}
+<table id="result_table">
+	<tr><th><input id="select_all" type="checkbox" class="row_selector"/></th><th>User</th><th>Name</th><th>Admin</th><th>Enabled</th></tr>
+	<tr class="spacer"><td></td><td></td><td></td><td></td><td></td></tr>
+</table>
+
+<div class="dialog" id="dialog_template">
+<ul>
+	<li>
+	<input type='text' id="edit_user_email" title="Email address" name='email' required/>
+	</li>
+	<li>
+	<input type='text' id="edit_user_full_name" title="Full name" name='full_name' required/>
+	</li>
+	<li>
+	<input type='password' id="edit_user_password" title="Password" name='password'/>
+	</li>
+	<li>
+	<label><input id="edit_user_is_active" type='checkbox' name='is_active' checked/>Enabled</label>
+	</li>
+	<li>
+	<label><input id="edit_user_is_admin" type='checkbox' name='is_admin'/>Grant admin permissions</label>
+	</li>
+	<li>
+	<input type='submit'/>
+	</li>
+</ul>
+</div>
+{% endblock %}

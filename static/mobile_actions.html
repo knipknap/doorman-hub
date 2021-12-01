@@ -1,0 +1,8 @@
+<table ng-controller="actionListController">
+    <tr class='result_row' ng-repeat="action in actions">
+        <td data-id='{{action.id}}'>
+            <span class='action_name'>{{action.name}}</span>
+            <span class='action_description'>{{action.description}}</span>
+         </td>
+    </tr>
+</table>
