@@ -90,8 +90,10 @@ def get_db_object_list(conn, cls):
 
 def password_hash(password):
     if password is not None:
-        return hashlib.sha256(password + const.crypto_salt).hexdigest()
-    return None
+        password = password.encode('utf-8')
+        salt = const.crypto_salt.encode('utf-8')
+        return hashlib.sha256(password + salt).hexdigest()
+    return Noneencode('utf-8')
 
 def getserial():
     serial_re = re.compile(r'Serial\s*:\s*(\S+)')

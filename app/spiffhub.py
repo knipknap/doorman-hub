@@ -124,7 +124,6 @@ def support():
 
 @app.route('/{}/<path>'.format(app.config['MEDIA_DIR']))
 def send_js(path):
-    print("PATH", path)
     return send_from_directory(const.static_dir, path)
 
 if __name__ == '__main__':
