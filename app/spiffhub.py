@@ -122,7 +122,7 @@ def about():
 def support():
     return render_template('support.html')
 
-@app.route('/%s/<path:path>'.format(const.static_dir))
+@app.route('/{}/<path>'.format(app.config['MEDIA_DIR']))
 def send_js(path):
     print("PATH", path)
     return send_from_directory(const.static_dir, path)
