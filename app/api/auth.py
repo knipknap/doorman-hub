@@ -7,8 +7,8 @@ from ..util import get_db_object_list, InvalidUsage, log, info, debug, err
 
 # Import external libraries.
 import apiclient
-from apiclient.discovery import build
-from apiclient import errors
+from googleapiclient import errors
+from googleapiclient.discovery import build
 oauth = build('oauth2', 'v2', developerKey = const.google_api_key)
 
 def _getsid():
