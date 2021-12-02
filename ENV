@@ -1,0 +1,6 @@
+CRYPTO_SALT=abcdefg
+GOOGLE_API_KEY=abcdefg
+SUPPORT_EMAIL=none@gmail.com
+SMTP_SERVER_AND_PORT=smtp.gmail.com:587
+SMTP_USER=
+SMTP_PASSWORD=
