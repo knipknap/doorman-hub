@@ -1,11 +1,12 @@
-FROM tiangolo/uwsgi-nginx-flask-docker
-COPY ./spiffhub /app
+FROM tiangolo/uwsgi-nginx-flask:python3.9
 ADD requirements.txt /
-ADD ./static /app/static
 
-RUN apt-get update \
+RUN touch /app/__init__.py \
+    && apt-get update \
     && apt-get -y install software-properties-common \
     && pip install -r /requirements.txt \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
+COPY ./app /app/app
+COPY ./app/static /app/static
+COPY ./app/uwsgi.ini /app

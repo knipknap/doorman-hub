@@ -1,0 +1,13 @@
+version: "3.7"
+services:
+  app:
+    image: doorman-hub
+    ports:
+      - 80:80
+    environment:
+      - CRYPTO_SALT=abcdefg
+      - GOOGLE_API_KEY=abcdefg
+      - SUPPORT_EMAIL=none@gmail.com
+      - SMTP_SERVER_AND_PORT=smtp.gmail.com:587
+      - SMTP_USER=
+      - SMTP_PASSWORD=
