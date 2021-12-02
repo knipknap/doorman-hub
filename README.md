@@ -1,4 +1,4 @@
-# Doorman home automation server written in Python/Flask
+# Doorman home automation server
 
 This repository contains a small home automation server that I installed
 on a Raspberry PI.
