@@ -1,4 +1,4 @@
-name: deploy
+name: build
 
 on:
   push:
@@ -12,6 +12,8 @@ jobs:
       # Check out code
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
       # This is the a separate action that sets up buildx runner
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
