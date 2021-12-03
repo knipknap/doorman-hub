@@ -4,13 +4,7 @@ This repository contains a small home automation server that I installed
 on a Raspberry PI.
 It is written in Python/Flask and can easily be extended by putting new
 drivers into app/drivers, which are just Python files with an
-on_init() method.
-
-There are multiple options for deployment:
-
-- Using Docker or Docker Compose.
-- Using [Piku](https://github.com/piku/piku).
-- Installing on your own uwsgi server.
+`on_init()` method.
 
 ## Warnings
 
@@ -37,14 +31,24 @@ be fixed in a few hours, except for maybe the DB library part.
 
 ## Getting started
 
-I actually recommend that you fork this repository, as it allows you to
+### Prerequisites
 
-- Manage all input parameters (environment variables mentioned below)
-  in Github Environments.
+You need to have docker-compose installed.
+Doorman has Docker images for amd64 and arm64.
 
-- Use Github's Actions to deploy whenever you make any change.
-  This repository includes an auto-deployment workflow, see
-  [deploy.yml](.github/workflows/deploy.yml).
+### Installation
 
-If you don't want to do that, you can also just download the
-docker-compose.yml file and deal with setting variables yourself.
+To force Docker to use the right platform version, make sure to run
+
+```
+docker pull knipknap/doorman-hub:latest --platform linux/amd64
+```
+
+or on ARM platforms:
+
+```
+docker pull knipknap/doorman-hub:latest --platform linux/arm64
+```
+
+To start Doorman, download the docker-compose.yml to your server,
+and type `docker-compose up`.
