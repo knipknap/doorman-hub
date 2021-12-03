@@ -1,4 +1,4 @@
-FROM agostof/uwsgi-nginx-flask:python3.9
+FROM agostof/uwsgi-nginx-flask:latest
 ADD requirements.txt /
 
 RUN touch /app/__init__.py \
