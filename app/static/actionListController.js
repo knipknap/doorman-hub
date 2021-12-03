@@ -7,7 +7,7 @@ app.controller('actionListController', function($scope) {
 
     /*
     $scope.action_clicked = function(id) {
-        spiffhub.call('action/1.0/action/start',
+        hub.call('action/1.0/action/start',
                       {'id': action.id},
                       function(data) { //success
                           $scope.error = 'success!';
@@ -17,7 +17,7 @@ app.controller('actionListController', function($scope) {
                       });
     };
 
-    spiffhub.call('action/1.0/action/list',
+    hub.call('action/1.0/action/list',
                   {'limit': 1000, 'offset': 0},
                   function(data) {
                       console.log(data);

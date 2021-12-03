@@ -45,7 +45,7 @@ $("#send_button").click(function() {
     }
     var subject = $("#subject").val();
     var body = $("#body").val();
-    spiffhub.call('utility/1.0/message/send',
+    hub.call('utility/1.0/message/send',
                   {'subject': subject, 'body': body},
                   function(data) {
                       infobox(data.msg);
@@ -68,7 +68,7 @@ $("#send_button").click(function() {
                 <li>
                         <span class="cell"></span>
                         <span class="cell" id="hint">
-                        Your support request will automatically include information on the SpiffHub that you are using, as well as debug information such as log files.
+                        Your support request will automatically include information on the DoormanHub that you are using, as well as debug information such as log files.
                         </span>
                 </li>
                 <li>

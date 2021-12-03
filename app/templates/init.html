@@ -81,7 +81,7 @@ $("#define_admin").submit(function(event) {
   inputs.prop('disabled', true);
   $("#initinfo").text("Initializing admin account...");
 
-  spiffhub.define_admin(email,
+  hub.define_admin(email,
                         password2,
                         function(email) {
                           $("#initinfo").text("Admin user was defined: " + email);
@@ -96,10 +96,10 @@ $("#define_admin").submit(function(event) {
 {% block nouser_content %}
 <form id="define_admin">
         <div id="logo">
-                <h1><a href="home"><span id="company">Spiff</span><span id="product">Hub</span></a></h1>
+                <h1><a href="home"><span id="company"></span><span id="product">DoormanHub</span></a></h1>
         </div>
         <span id="initinfo">
-                Congratulations on your new Spiff Hub!<br/>
+                Congratulations on your new Doorman!<br/>
                 Please enter the email address that is granted admin permissions.
         </span>
         <ul>

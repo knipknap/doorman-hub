@@ -3,9 +3,9 @@
 <head>
 	<meta charset="utf-8">
 
-	<title>{% block title %}{% endblock %}{% if self.title() %} - {% endif %}Spiff Hub</title>
-	<meta name="description" content="Spiff Doorman Admin Web Interface">
-	<meta name="author" content="Spiff">
+	<title>{% block title %}{% endblock %}{% if self.title() %} - {% endif %}DoormanHub</title>
+	<meta name="description" content="Doorman Admin Web Interface">
+	<meta name="author" content="">
 	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/redmond/jquery-ui.min.css">
 	<link rel="stylesheet" href="{{ config.MEDIA_DIR }}/styles.css?v=1.0">
 
@@ -15,12 +15,12 @@
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
         <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
         <script src="{{ config.MEDIA_DIR }}/cookie.js"></script>
-        <script src="{{ config.MEDIA_DIR }}/spiffhub.js"></script>
+        <script src="{{ config.MEDIA_DIR }}/hub.js"></script>
         <script src="{{ config.MEDIA_DIR }}/util.js"></script>
         <script src="{{ config.MEDIA_DIR }}/pageindex.js"></script>
 <script>
 $(document).ready(function(){
-  var spiffhub = new SpiffHub('api');
+  var hub = new DoormanHub('api');
   var epp = 25; // entries per page in list views.
 
   function on_error(status, msg) {
@@ -29,7 +29,7 @@ $(document).ready(function(){
 
   $("#logout_button").click(
     function() {
-      spiffhub.logout(
+      hub.logout(
         function() {
           window.location.replace("/");
         },
@@ -52,7 +52,7 @@ $(document).ready(function(){
     <div id="header">
 	{% block header %}
 		<div id="logo">
-			<h1><a href="home"><span id="company">Spiff</span><span id="product">Hub</span></a></h1>
+			<h1><a href="home"><span id="company"></span><span id="product">DoormanHub</span></a></h1>
 		</div>
 		<nav>
 			<ul>
@@ -84,7 +84,7 @@ $(document).ready(function(){
 {% endblock %}
 </div>
 <div id="footer">
-&copy;2015 by Spiff<sup>&reg;</sup>. All rights reserved.
+&copy;2021 by Samuel Abels<sup>&reg;</sup>. All rights reserved.
 </div>
 </body>
 </html>

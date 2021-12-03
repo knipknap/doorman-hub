@@ -1,4 +1,4 @@
-NAME=spiffhub
+NAME=hub
 SALT=$(shell openssl rand -base64 16)
 
 .PHONY : build

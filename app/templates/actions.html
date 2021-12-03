@@ -21,7 +21,7 @@
 {% block script %}
 {{ super() }}
 function delete_all(on_success, on_error) {
-    spiffhub.call('action/1.0/action/remove_all',
+    hub.call('action/1.0/action/remove_all',
 	          undefined,
 	          on_success, on_error);
 };
@@ -30,7 +30,7 @@ function delete_selected(on_success, on_error) {
     var id_list = $('#result_table input[type=checkbox]:checked').map(function(){
        return $(this).val();
     }).get();
-    spiffhub.call('action/1.0/action/remove',
+    hub.call('action/1.0/action/remove',
 	          {'id': id_list},
 	          on_success, on_error);
 };
@@ -61,7 +61,7 @@ function make_edit_dialog() {
   submit.click(function () {
     var data = get_data_from_dialog(dialog);
     data.id = dialog.data("action_id");
-    spiffhub.call('action/1.0/action/edit',
+    hub.call('action/1.0/action/edit',
                   data,
                   function() {
                     dialog.dialog('close');
@@ -80,7 +80,7 @@ function make_edit_dialog() {
 
 function update_device_selector(dialog, success_cb) {
   var sel = dialog.find('#select_action_device');
-  spiffhub.call('hardware/1.0/device/list',
+  hub.call('hardware/1.0/device/list',
                 undefined,
                 function(data) {
                     sel.empty();
@@ -106,7 +106,7 @@ function update_actor_selector(dialog, success_cb) {
     return;
   }
   sel.show('fast');
-  spiffhub.call('hardware/1.0/actor/list',
+  hub.call('hardware/1.0/actor/list',
                 {'device_id': device_id},
                 function(data) {
                     sel.empty();
@@ -125,7 +125,7 @@ function update_actor_selector(dialog, success_cb) {
 function action_start_link(action) {
   link = $("<a href='#'>Click to start</a>");
   link.click(function() {
-    spiffhub.call('action/1.0/action/start',
+    hub.call('action/1.0/action/start',
                   {'id': action.id},
                   function(data) {
                   },

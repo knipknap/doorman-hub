@@ -21,7 +21,7 @@ function addrow(event) {
 };
 
 $("#event_clear").click(function() {
-    spiffhub.call('log/1.0/event/remove_all',
+    hub.call('log/1.0/event/remove_all',
 	          undefined,
 	          function(data) {
 	              refresh_list();

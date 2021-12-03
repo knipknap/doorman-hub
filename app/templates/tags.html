@@ -14,7 +14,7 @@
 {% block script %}
 {{ super() }}
 function delete_all(on_success, on_error) {
-    spiffhub.call('nfc/1.0/tag/remove_all',
+    hub.call('nfc/1.0/tag/remove_all',
 	          undefined,
 	          on_success, on_error);
 };
@@ -23,7 +23,7 @@ function delete_selected(on_success, on_error) {
     var id_list = $('#result_table input[type=checkbox]:checked').map(function(){
        return $(this).val();
     }).get();
-    spiffhub.call('nfc/1.0/tag/remove',
+    hub.call('nfc/1.0/tag/remove',
 	          {'id': id_list},
 	          on_success, on_error);
 };
@@ -47,7 +47,7 @@ function make_edit_dialog() {
   submit.val("Save changes");
   submit.click(function () {
     var data = get_data_from_dialog(dialog);
-    spiffhub.call('nfc/1.0/tag/edit',
+    hub.call('nfc/1.0/tag/edit',
                   data,
                   function() {
                     dialog.dialog('close');
@@ -66,7 +66,7 @@ function make_edit_dialog() {
 
 function update_action_selector(dialog, success_cb) {
   var sel = dialog.find('#select_action');
-  spiffhub.call('action/1.0/action/list',
+  hub.call('action/1.0/action/list',
                 {},
                 function(data) {
                     sel.empty();

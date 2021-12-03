@@ -45,7 +45,7 @@ function make_add_dialog(title, api_call) {
   submit.val("Add");
   submit.click(function() {
     var data = get_data_from_dialog(dialog);
-    spiffhub.call(api_call,
+    hub.call(api_call,
                   data,
                   function() {
                     dialog.dialog('destroy').remove();

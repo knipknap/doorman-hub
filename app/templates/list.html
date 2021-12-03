@@ -5,7 +5,7 @@ var index = new PageIndex($("#pageindex"), '');
 index.set_entries_per_page(epp);
 
 function refresh_list(on_success) {
-  spiffhub.call('{{ list_api }}',
+  hub.call('{{ list_api }}',
                 {'limit': epp, 'offset': offset},
                 function(data) {
                     var len = data.list.length;

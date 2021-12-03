@@ -1,1 +1,1 @@
-wsgi: app.spiffhub:app
+wsgi: app.hub:app

@@ -15,7 +15,7 @@
 {% block script %}
 {{ super() }}
 function delete_all(on_success, on_error) {
-    spiffhub.call('auth/1.0/user/remove_all',
+    hub.call('auth/1.0/user/remove_all',
 	          undefined,
 	          on_success, on_error);
 };
@@ -24,7 +24,7 @@ function delete_selected(on_success, on_error) {
     var email_list = $('#result_table input[type=checkbox]:checked').map(function(){
        return $(this).val();
     }).get();
-    spiffhub.call('auth/1.0/user/remove',
+    hub.call('auth/1.0/user/remove',
 	          {'email': email_list},
 	          on_success, on_error);
 };
@@ -51,7 +51,7 @@ function make_edit_dialog() {
   submit.click(function () {
     var data = get_data_from_dialog(dialog);
     data.id = dialog.data("user_id");
-    spiffhub.call('auth/1.0/user/edit',
+    hub.call('auth/1.0/user/edit',
                   data,
                   function() {
                     dialog.dialog('destroy').remove();

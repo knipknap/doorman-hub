@@ -53,7 +53,7 @@ $("#login_form").submit(function(event) {
   inputs.prop('disabled', true);
   $("#logininfo").text("Logging in...");
 
-  spiffhub.login(email,
+  hub.login(email,
                  password,
                  expires,
                  function(email) {
@@ -69,9 +69,9 @@ $("#login_form").submit(function(event) {
 {% block nouser_content %}
 <form id="login_form">
 	<div id="logo">
-		<h1><a href="home"><span id="company">Spiff</span><span id="product">Hub</span></a></h1>
+		<h1><a href="home"><span id="company"></span><span id="product">DoormanHub</span></a></h1>
 	</div>
-	<span id="logininfo">Log me in to this Spiff Hub</span>
+	<span id="logininfo">Log me in</span>
 	<input type="text" name="username" required/>
 	<input type="password" name="password" required/>
 	<input type="submit" value="Log in"/>

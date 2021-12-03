@@ -2,7 +2,7 @@
 <html>
 <head>
 	<title>
-	SpiffHub
+	DoormanHub
 	</title>
 
 	<meta charset="utf-8">
@@ -36,7 +36,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-route.js"></script>
 
     <script src="res/cookie.js"></script>
-    <script src="res/spiffhub.js"></script>
+    <script src="res/hub.js"></script>
     <script src="res/util.js"></script>
     <script src="res/pageindex.js"></script>
 
@@ -55,10 +55,10 @@
     }
     </style>
 </head>
-<body ng-app="SpiffHub">
+<body ng-app="DoormanHub">
 <script>
-//var spiffhub = new SpiffHub('api');
-var app = angular.module('SpiffHub', ["ngRoute"]);
+//var hub = new DoormanHub('api');
+var app = angular.module('DoormanHub', ["ngRoute"]);
 app.config(function($routeProvider) {
     $routeProvider
     .when("/", {

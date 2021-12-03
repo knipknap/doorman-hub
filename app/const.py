@@ -12,5 +12,5 @@ smtp_from = support_email
 smtp_password = os.environ['SMTP_PASSWORD']
 
 session_timeout = 7776000
-db_file = os.path.join(__dirname__, 'spiffhub.db')
+db_file = os.path.join(__dirname__, 'hub.db')
 static_dir = os.path.join(__dirname__, 'static')

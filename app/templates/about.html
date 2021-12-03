@@ -47,7 +47,7 @@ $("#reboot_dialog_no").click(function() {
 
 $("#reboot_dialog_yes").click(function() {
   $("#reboot_dialog").dialog("close");
-  spiffhub.call('utility/1.0/system/reboot',
+  hub.call('utility/1.0/system/reboot',
                 undefined,
                 function(data) {
                   infobox("Reboot triggered. Please open the home page once the reboot is complete.");
@@ -58,21 +58,21 @@ $("#reboot_dialog_yes").click(function() {
 {% block content_middle %}
 <div class="dialog" id="reboot_dialog" title="Confirm reboot">
 <span>
-This web page will not work while your SpiffHub is rebooting.
+This web page will not work while your DoormanHub is rebooting.
 You need to re-open this page once the reboot is completed.
-Are you sure that you want to reboot your SpiffHub now?
+Are you sure that you want to reboot your DoormanHub now?
 </span>
 <input type='button' id="reboot_dialog_yes" value='Yes, reboot now'/>
 <input type='button' id="reboot_dialog_no" value='Rather not'/>
 </div>
 
-<h1 id="about">Your SpiffHub</h1>
+<h1 id="about">Your DoormanHub</h1>
 <ul id="hubdata">
-<li><label>SpiffHub Version:</label><span>{{ config.VERSION }}</span></li>
+<li><label>DoormanHub Version:</label><span>{{ config.VERSION }}</span></li>
 <li><label>Serial Number:</label><span>{{ serial }}</span></li>
 <li>
   <label>Actions:</label>
-  <a href="#reboot_button" id="reboot_button" class="button">Reload SpiffHub</a>
+  <a href="#reboot_button" id="reboot_button" class="button">Reload DoormanHub</a>
 </li>
 </ul>
 <h1 id="about">About Us</h1>

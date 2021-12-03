@@ -1,4 +1,4 @@
-var SpiffHub = function(api_url) {
+var DoormanHub = function(api_url) {
     this._mkurl = function(action, params) {
         var url = api_url + '/' + action;
         if (typeof params === 'undefined')
