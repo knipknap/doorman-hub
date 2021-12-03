@@ -1,5 +1,6 @@
 PORT=9080
 BIND_ADDRESS=0.0.0.0
+NGINX_SERVER_NAME=raspberrypi.local
 
 CRYPTO_SALT=abcdefg
 GOOGLE_API_KEY=abcdefg
