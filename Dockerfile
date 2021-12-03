@@ -7,6 +7,6 @@ RUN touch /app/__init__.py \
     && pip install -r /requirements.txt \
     && rm -rf /var/lib/apt/lists/*
 
-COPY ./app /app/app
-COPY ./app/static /app/static
-COPY ./app/uwsgi.ini /app
+COPY ./doormanhub /app/doormanhub
+COPY ./doormanhub/static /app/static
+COPY ./doormanhub/uwsgi.ini /app

@@ -10,7 +10,7 @@
             "request": "launch",
             "module": "flask",
             "env": {
-                "FLASK_APP": "app/hub.py",
+                "FLASK_APP": "doormanhub/hub.py",
                 "FLASK_ENV": "development"
             },
             "args": [
