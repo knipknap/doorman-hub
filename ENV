@@ -1,3 +1,6 @@
+PORT=9080
+BIND_ADDRESS=0.0.0.0
+
 CRYPTO_SALT=abcdefg
 GOOGLE_API_KEY=abcdefg
 SUPPORT_EMAIL=none@gmail.com
