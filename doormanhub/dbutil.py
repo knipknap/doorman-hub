@@ -5,7 +5,7 @@ from .exceptions import InvalidUsage
 
 def model_to_dict(obj):
     thedict = {}
-    for key, value in _model_to_dict(obj).items():
+    for key, value in _model2dict(obj).items():
         if isinstance(value, peewee.DateTimeField):
             thedict[key] = value.strftime('%Y-%m-%d %H:%M:%S')
         else:
