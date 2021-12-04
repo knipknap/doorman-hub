@@ -3,8 +3,8 @@
 This repository contains a small home automation server that I installed
 on a Raspberry PI.
 It is written in Python/Flask and can easily be extended by putting new
-drivers into app/drivers, which are just Python files with an
-`on_init()` method.
+drivers into [doormanhub/drivers](doormanhub/drivers), which are just Python
+module with a driver.py that contains an `on_init()` method.
 
 ## Warnings
 
