@@ -11,7 +11,7 @@ if const.db_host:
                             host=const.db_host,
                             port=const.db_port,
                             user=const.db_user,
-                            passwd=const.db_password)
+                            password=const.db_password)
 else:
     db = SqliteDatabase(const.db_file)
 
