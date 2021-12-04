@@ -1,6 +1,16 @@
+import peewee
 from flask import request, g, jsonify, current_app
-from playhouse.shortcuts import model_to_dict
+from playhouse.shortcuts import model_to_dict as _model2dict
 from .exceptions import InvalidUsage
+
+def model_to_dict(obj):
+    thedict = {}
+    for key, value in model_to_dict(obj).items():
+        if isinstance(value, peewee.DateTimeField):
+            thedict[key] = value.strftime('%Y-%m-%d %H:%M:%S')
+        else:
+            thedict[key] = value
+    return thedict
 
 def get_db_object_list(cls):
     try:

@@ -1,7 +1,6 @@
 from flask import Blueprint, request, jsonify, g, current_app
-from playhouse.shortcuts import model_to_dict
 from ..db import Action
-from ..dbutil import get_db_object_list
+from ..dbutil import get_db_object_list, model_to_dict
 from ..exceptions import InvalidUsage
 from ..logs import info, debug, err
 from .auth import require_auth, require_admin

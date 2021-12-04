@@ -1,11 +1,10 @@
 from flask import Blueprint, request, abort, jsonify, g
 from functools import wraps
 from datetime import datetime
-from playhouse.shortcuts import model_to_dict
 from .. import const
 from ..db import Session, User
 from ..util import hash_password
-from ..dbutil import get_db_object_list
+from ..dbutil import get_db_object_list, model_to_dict
 from ..exceptions import InvalidUsage
 from ..logs import log, info, debug, err
 
