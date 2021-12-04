@@ -1,7 +1,7 @@
 import peewee
 from flask import request, g, jsonify, current_app
 from playhouse.shortcuts import model_to_dict as _model2dict
-from .const import json_dateformat
+from . import const
 from .exceptions import InvalidUsage
 
 def model_to_dict(obj):
