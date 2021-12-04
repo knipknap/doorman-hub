@@ -4,6 +4,8 @@ services:
     image: doorman-hub
     ports:
       - 80:80
+    devices:
+      - /dev/gpiomem:/dev/gpiomem
     environment:
       - CRYPTO_SALT=abcdefg
       - GOOGLE_API_KEY=abcdefg

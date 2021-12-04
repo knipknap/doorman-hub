@@ -1,14 +1,14 @@
-import sys
 import os
-import imp
-from .db import db, User
-from . import const
+import sys
+import importlib
 from flask import Flask, render_template, jsonify, g, redirect, send_from_directory
+from . import const
+from .db import db, User
 from .api import action, auth, hardware, log, nfc, utility
 from .api.auth import attempt_auth, require_admin
 from .exceptions import InvalidUsage
 from .util import getserial
-from .logs import debug
+from .logs import debug, info
 from .version import __version__
 
 app = Flask(__name__, static_url_path='')
@@ -24,19 +24,39 @@ app.register_blueprint(nfc.api, url_prefix='/api/nfc/1.0')
 app.register_blueprint(utility.api, url_prefix='/api/utility/1.0')
 
 def load_drivers(driver_dir):
-    sys.path.append(driver_dir)
     driver_dirs = [o for o in os.listdir(driver_dir)
                    if os.path.isdir(os.path.join(driver_dir, o))]
 
+    # For some reason, spec.loader.exec_module() does not
+    # execute the module if it was found using a FileFinder.
+    # https://stackoverflow.com/questions/70219533/
+    # As a workaround, insert the driver dir to sys.path and use
+    # importlib.util.find_spec() instead.
+    sys.path.append(driver_dir)
+
+    #loader_details = (
+    #    importlib.machinery.ExtensionFileLoader,
+    #    importlib.machinery.EXTENSION_SUFFIXES
+    #)
+    #finder = importlib.machinery.FileFinder(driver_dir, loader_details)
+
     for name in driver_dirs:
         print("Loading", name)
-        fp, pathname, description = imp.find_module(name)
-        module = imp.load_module(name, fp, pathname, description)
+
+        # Find and import the module.
+        #spec = finder.find_spec(name)
+        spec = importlib.util.find_spec(name)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+
+        # Every driver needs a "driver" submodule; find it here.
         app.drivers.append(module)
         driver = getattr(module, 'driver')
         if driver is None:
             print(name + ': Driver without a valid "driver" module. Skipping.')
             continue
+
+        # Find the entry point in the driver submodule.
         on_init = getattr(driver, 'on_init')
         if on_init is not None:
             print("Calling", name + ".driver.on_init()")

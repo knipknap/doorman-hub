@@ -30,7 +30,7 @@ be fixed in a few hours, except for maybe the JS library part.
 You need to have docker-compose installed.
 Doorman has Docker images for amd64 and arm64.
 
-### Installation
+### Choose a Docker image for your platform
 
 To force Docker to use the right platform version, make sure to run
 
@@ -38,11 +38,30 @@ To force Docker to use the right platform version, make sure to run
 docker pull knipknap/doorman-hub:latest --platform linux/amd64
 ```
 
-or on ARM platforms:
+or on ARM:
+
+```
+docker pull knipknap/doorman-hub:latest --platform linux/arm/v7
+```
+
+or on ARM64:
 
 ```
 docker pull knipknap/doorman-hub:latest --platform linux/arm64
 ```
+
+### Installation
+
+First, you need to allow Docker containers to access your GPIO
+pins:
+
+```
+sudo chmod a+rw /dev/gpiomem
+```
+
+Is there a better way to do this without hard-coding the
+group or user ID of the host device into your Docker container?
+I am not aware of one, so if you are, let me know :-).
 
 To start Doorman, download the docker-compose.yml to your server,
 and type `docker-compose up`.

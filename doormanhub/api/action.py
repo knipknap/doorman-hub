@@ -136,7 +136,8 @@ def start_action_from_id(action_id):
             "failed:", e)
         raise
     info("action started:", action.name)
-    return jsonify({'msg': 'Action started', 'action': action.to_dict()})
+    action_dict = model_to_dict(action)
+    return jsonify({'msg': 'Action started', 'action': action_dict})
 
 @api.route('/action/start', methods=['POST'])
 @require_auth

@@ -28,7 +28,7 @@ class Device(object):
         self.actors = {}
 
     def to_dict(self):
-        actors = [v.to_dict() for v in self.actors.itervalues()]
+        actors = [v.to_dict() for v in self.actors.values()]
         return {'id': self.id,
                 'name': self.name,
                 'interface': self.interface,
