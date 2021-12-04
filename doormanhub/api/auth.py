@@ -81,10 +81,11 @@ def session_start():
         abort(500, "session creation failed")
 
     log(user, 'info', "User logged in (via password)")
+    expires = session.expires.strftime(const.json_dateformat)
     return jsonify({"msg": "login successful",
                     "email": user.email,
                     "sid": session.id,
-                    "sid_expires": session.expires})
+                    "sid_expires": expires})
 
 @api.route('/session/start_google', methods=['POST'])
 def session_start_google():
@@ -117,10 +118,11 @@ def session_start_google():
         abort(500, "session creation failed")
 
     log(user, 'info', "user logged in (via Google)")
+    expires = session.expires.strftime(const.json_dateformat)
     return jsonify({"msg": "login successful",
                     "email": user.email,
                     "sid": session.id,
-                    "sid_expires": session.expires})
+                    "sid_expires": expires})
 
 @api.route('/session/check', methods=['POST'])
 def session_check():

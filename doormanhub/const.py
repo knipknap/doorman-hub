@@ -13,6 +13,7 @@ smtp_from = support_email
 smtp_password = os.environ['SMTP_PASSWORD']
 
 session_timeout = timedelta(days=180)
+json_dateformat = '%Y-%m-%d %H:%M:%S'
 db_file = os.path.join(__dirname__, 'hub.db')
 static_dir = os.path.join(__dirname__, 'static')
 

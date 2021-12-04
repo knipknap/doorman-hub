@@ -1,6 +1,7 @@
 import peewee
 from flask import request, g, jsonify, current_app
 from playhouse.shortcuts import model_to_dict as _model2dict
+from .const import json_dateformat
 from .exceptions import InvalidUsage
 
 def model_to_dict(obj):
@@ -8,7 +9,7 @@ def model_to_dict(obj):
     for key, value in _model2dict(obj).items():
         field = obj._meta.fields[key]
         if isinstance(field, peewee.DateTimeField):
-            thedict[key] = value.strftime('%Y-%m-%d %H:%M:%S')
+            thedict[key] = value.strftime(const.json_dateformat)
         else:
             thedict[key] = value
     return thedict
