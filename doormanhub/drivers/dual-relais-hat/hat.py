@@ -9,6 +9,8 @@ except ImportError:
     err("RPi.GPIO Python module is not installed; using Mock.GPIO")
     import Mock.GPIO as GPIO
 
+device_name = "GPIO-Relais-Hat"
+
 RELAIS1_PIN = 17 # TODO
 RELAIS2_PIN = 18 # TODO
 RELAIS_PINS = [RELAIS1_PIN, RELAIS2_PIN]
@@ -40,16 +42,16 @@ def discover():
     relais2_on = GPIO.input(RELAIS2_PIN)
 
     return [
-      ("GPIO-Relais-Hat", (relais1_on, relais2_on)),
+      (device_name, (relais1_on, relais2_on)),
     ]
 
 def switch(device_id, switch_id, on):
     switch_id = int(switch_id)
     pin = RELAIS_PINS[switch_id - 1]
-    on = GPIO.input(pin)
     status = GPIO.HIGH if on else GPIO.LOW
     GPIO.output(pin, status)
-    info("Switched relais %s to %s", switch_id, 'on' if status == GPIO.HIGH else 'off')
+    status_str = 'on' if status == GPIO.HIGH else 'off'
+    info("{}: Switched relais {} to {}".format(device_name, switch_id, status_str))
 
 def switch_temporary(device_id, switch_id, seconds, on=True):
     try:
