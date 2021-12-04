@@ -63,5 +63,11 @@ Is there a better way to do this without hard-coding the
 group or user ID of the host device into your Docker container?
 I am not aware of one, so if you are, let me know :-).
 
-To start Doorman, download the docker-compose.yml to your server,
-and type `docker-compose up`.
+Lastly, to start Doorman, download the `docker-compose.yml` to
+your server, and type
+
+```
+docker-compose up
+```
+
+That's it. The server should be reachable on port 80.
