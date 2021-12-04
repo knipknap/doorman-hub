@@ -11,8 +11,8 @@ except ImportError:
 
 device_name = "GPIO-Relais-Hat"
 
-RELAIS1_PIN = 17 # TODO
-RELAIS2_PIN = 18 # TODO
+RELAIS1_PIN = 7
+RELAIS2_PIN = 11
 RELAIS_PINS = [RELAIS1_PIN, RELAIS2_PIN]
 
 GPIO.setmode(GPIO.BCM)

@@ -6,6 +6,7 @@ services:
       - 80:80
     devices:
       - /dev/gpiomem:/dev/gpiomem
+    privileged: true   # otherwise RPI.GPIO refuses to run
     environment:
       - CRYPTO_SALT=abcdefg
       - GOOGLE_API_KEY=abcdefg
