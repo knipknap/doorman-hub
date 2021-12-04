@@ -6,7 +6,8 @@ from .exceptions import InvalidUsage
 def model_to_dict(obj):
     thedict = {}
     for key, value in _model2dict(obj).items():
-        if isinstance(value, peewee.DateTimeField):
+        field = obj._meta.fields[key]
+        if isinstance(field, peewee.DateTimeField):
             thedict[key] = value.strftime('%Y-%m-%d %H:%M:%S')
         else:
             thedict[key] = value
