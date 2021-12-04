@@ -23,7 +23,26 @@ class JSONField(TextField):
         if value is not None:
             return json.loads(value)
 
-class User(Model):
+class OrderedModel(Model):
+    class Meta:
+        order_by = []
+
+    # Simple re-implementation of default ordering that was removed in peewee 3.x
+    # Ideally, ordering should always be explicitly set in query, but this can be
+    # very handy, esp. for auto-scaffolding frameworks like flask-admin
+    @classmethod
+    def select(cls, *fields):
+        order_by = []
+
+        for field_name in cls._meta.order_by:
+            if field_name.startswith('-'):
+                order_by.append(getattr(cls, field_name[1:]).desc())
+            else:
+                order_by.append(getattr(cls, field_name))
+
+        return super(OrderedModel, cls).select(*fields).order_by(*order_by)
+
+class User(OrderedModel):
     email = CharField(max_length=100, unique=True, index=True)
     full_name = CharField(max_length=100, default='')
     password = CharField(max_length=65, null=True)
@@ -32,6 +51,7 @@ class User(Model):
 
     class Meta:
         database = db
+        order_by = ['email']
 
     def __str__(self):
         return str(self.id) + '(' + self.email + ')'
@@ -57,7 +77,7 @@ class Session(Model):
     def is_valid(self):
         return self.expires >= datetime.now()
 
-class Action(Model):
+class Action(OrderedModel):
     name = CharField(max_length=40, unique=True, index=True)
     description = CharField(max_length=200, default='')
     device_id = CharField(max_length=100)
@@ -66,6 +86,7 @@ class Action(Model):
 
     class Meta:
         database = db
+        order_by = ['name']
 
     def __str__(self):
         return str(self.id) + '(' + self.name + ')'
@@ -80,7 +101,7 @@ class Tag(Model):
     def __str__(self):
         return self.id
 
-class Event(Model):
+class Event(OrderedModel):
     user_id = CharField(max_length=100)
     client_ip = CharField(max_length=46, null=True)
     severity = CharField(max_length=10)
@@ -89,6 +110,7 @@ class Event(Model):
 
     class Meta:
         database = db
+        order_by = ['-timestamp']
 
     def __str__(self):
         return str(self.timestamp) \
