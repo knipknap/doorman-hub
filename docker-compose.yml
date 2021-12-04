@@ -11,3 +11,21 @@ services:
       - SMTP_SERVER_AND_PORT=smtp.gmail.com:587
       - SMTP_USER=
       - SMTP_PASSWORD=
+      - MYSQL_HOST=mysql
+      - MYSQL_PORT=3306
+      - MYSQL_DB=doorman
+      - MYSQL_USER=doorman
+      - MYSQL_PASSWORD=doorman-db-password
+
+  mysql:
+    image: mysql:5.7
+    volumes:
+      - mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: doorman
+      MYSQL_USER: doorman
+      MYSQL_PASSWORD: doorman-db-password
+
+volumes:
+  mysql-data:

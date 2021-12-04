@@ -1,7 +1,9 @@
-import json
-from flask import Blueprint, request, abort, jsonify, g, current_app
-from .. import db
-from ..util import get_db_object_list, InvalidUsage, info, debug, err
+from flask import Blueprint, request, jsonify, g, current_app
+from playhouse.shortcuts import model_to_dict
+from ..db import Action
+from ..dbutil import get_db_object_list
+from ..exceptions import InvalidUsage
+from ..logs import info, debug, err
 from .auth import require_auth, require_admin
 
 api = Blueprint('Action API', __name__)
@@ -35,9 +37,15 @@ def action_add():
     if params is None:
         raise InvalidUsage("params attribute is required")
 
-    action = db.Action.new(g.db, name, description, device_id, actor_id, params)
+    action = Action.create(name=name,
+                           description=description,
+                           device_id=device_id,
+                           actor_id=actor_id,
+                           params=params)
+
     info("action created:", action.name, "(id is " + str(action.id) + ")")
-    return jsonify({'msg': 'Action created', 'action': action.to_dict()})
+    action_dict = model_to_dict(action)
+    return jsonify({'msg': 'Action created', 'action': action_dict})
 
 @api.route('/action/edit', methods=['POST'])
 @require_admin
@@ -47,7 +55,7 @@ def action_edit():
         raise InvalidUsage("id attribute is required")
 
     # Make sure that the tag exists.
-    action = db.Action.get(g.db, id=action_id)
+    action = Action.select().get_or_none(Action.id == action_id)
     if action is None:
         raise InvalidUsage("action with the given id does not exist")
 
@@ -77,14 +85,15 @@ def action_edit():
     if action.params is None:
         raise InvalidUsage("params attribute is required")
 
-    action.save(g.db)
+    action.save()
     info("action changed:", action.name, "(id is " + str(action.id) + ")")
-    return jsonify({'msg': 'Action saved', 'action': action.to_dict()})
+    action_dict = model_to_dict(action)
+    return jsonify({'msg': 'Action saved', 'action': action_dict})
 
 @api.route('/action/list', methods=['POST'])
 @require_auth
 def action_list():
-    return get_db_object_list(g.db, db.Action)
+    return get_db_object_list(Action)
 
 @api.route('/action/remove', methods=['POST'])
 @require_admin
@@ -92,14 +101,14 @@ def action_remove():
     id_list = request.json.get("id")
     if id_list is None:
         raise InvalidUsage("id attribute is required")
-    db.Action.remove_many(g.db, id=id_list)
+    Action.delete().where(Action.id.in_(id_list)).execute()
     info("actions removed:", '(' + ' '.join(id_list) + ')')
     return jsonify({'msg': 'Action removed', 'id': id_list})
 
 @api.route('/action/remove_all', methods=['POST'])
 @require_admin
 def action_remove_all():
-    db.Action.remove_many(g.db)
+    Action.delete().execute()
     info("all actions removed")
     return jsonify({'msg': 'All actions removed'})
 
@@ -107,7 +116,7 @@ def action_remove_all():
 Separate function to allow for other APIs to import it.
 """
 def start_action_from_id(action_id):
-    action = db.Action.get(g.db, id=action_id)
+    action = Action.get_or_none(Action.id == action_id)
     if action is None:
         raise InvalidUsage("action with the given id does not exist")
 

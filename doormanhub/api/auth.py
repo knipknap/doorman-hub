@@ -1,9 +1,13 @@
-import time
 from flask import Blueprint, request, abort, jsonify, g
 from functools import wraps
-from .. import db
+from datetime import datetime
+from playhouse.shortcuts import model_to_dict
 from .. import const
-from ..util import get_db_object_list, InvalidUsage, log, info, debug, err
+from ..db import Session, User
+from ..util import hash_password
+from ..dbutil import get_db_object_list
+from ..exceptions import InvalidUsage
+from ..logs import log, info, debug, err
 
 # Import external libraries.
 import apiclient
@@ -25,11 +29,11 @@ def attempt_auth():
     if sid is None:
         return
 
-    session = db.Session.get(g.db, id=sid)
+    session = Session.get_or_none(Session.id == sid)
     if session is None or not session.is_valid():
         return
 
-    user = db.User.get(g.db, id=session.user_id)
+    user = User.get_or_none(User.id == session.user_id)
     if user is None:
         return
 
@@ -66,12 +70,13 @@ def session_start():
     if password is None:
         raise InvalidUsage("password attribute is required")
 
-    user = db.User.get(g.db, email=email)
+    user = User.get_or_none(User.email == email)
     if user is None or not user.check_password(password):
         err("login failed:", email)
         abort(401)
 
-    session = db.Session.new(g.db, user.id, int(time.time()) + const.session_timeout)
+    expires = datetime.now() + const.session_timeout
+    session = Session.create(user=user, expires=expires)
     if session is None:
         err("Failed to create session:", email)
         abort(500, "session creation failed")
@@ -102,12 +107,13 @@ def session_start_google():
     except KeyError as e:
         abort(500, "google token contains no email address")
 
-    user = db.User.get(g.db, email=email)
+    user = User.get_or_none(User.email == email)
     if user is None:
         err("Google authentication for user", email, "failed")
         abort(401)
 
-    session = db.Session.new(g.db, user.id, int(time.time()) + const.session_timeout)
+    expires = datetime.now() + const.session_timeout
+    session = Session.create(user=user, expires=expires)
     if session is None:
         abort(500, "session creation failed")
 
@@ -120,7 +126,7 @@ def session_start_google():
 @api.route('/session/check', methods=['POST'])
 def session_check():
     sid = _getsid()
-    session = db.Session.get(g.db, id=sid)
+    session = Session.get_or_none(Session.id == sid)
     if session is None or not session.is_valid():
         abort(401)
     return jsonify({"msg": "session is valid", "sid": session.id})
@@ -128,9 +134,9 @@ def session_check():
 @api.route('/session/end', methods=['POST'])
 def session_end():
     sid = _getsid()
-    session = db.Session.get(g.db, id=sid)
+    session = Session.get_or_none(Session.id == sid)
     if session is not None:
-        session.remove(g.db)
+        session.delete_instance()
         debug("user with id", session.user_id, "logged out")
     else:
         debug("session id", sid, "logged out")
@@ -139,7 +145,7 @@ def session_end():
 @api.route('/user/define_admin', methods=['POST'])
 def define_admin():
     # If we do not have an admin account defined yet, add one now.
-    admin = db.User.get(g.db, is_active=True, is_admin=True)
+    admin = User.get_or_none(User.is_active == True, User.is_admin == True)
     if admin is not None:
         raise InvalidUsage("admin account already exists")
 
@@ -151,7 +157,10 @@ def define_admin():
     if password is None:
         raise InvalidUsage("password attribute is required")
 
-    user = db.User.new(g.db, email, 'Admin', password, is_admin=True)
+    user = User.create(email=email,
+                       full_name='Admin',
+                       password=hash_password(password),
+                       is_admin=True)
     log(user, 'info', 'initial admin account defined')
     return jsonify({'msg': 'Admin rights granted', 'email': user.email})
 
@@ -179,13 +188,18 @@ def user_add():
         raise InvalidUsage("is_active attribute is required")
 
     # Make sure that the user does not exist.
-    user = db.User.get(g.db, email=email)
+    user = User.get_or_none(email=email)
     if user:
         raise InvalidUsage("user with the given email address exists already")
 
-    user = db.User.new(g.db, email, full_name, password, is_admin, is_active)
+    user = User.create(email=email,
+                       full_name=full_name,
+                       password=password,
+                       is_admin=is_admin,
+                       is_active=is_active)
     info('user created:', user.email)
-    return jsonify({'msg': 'User created', 'user': user.to_dict()})
+    user_dict = model_to_dict(user)
+    return jsonify({'msg': 'User created', 'user': user_dict})
 
 @api.route('/user/edit', methods=['POST'])
 @require_admin
@@ -195,7 +209,7 @@ def user_edit():
         raise InvalidUsage("id attribute is required")
 
     # Make sure that the user exists.
-    user = db.User.get(g.db, id=user_id)
+    user = User.get_or_none(User.id == user_id)
     if user is None:
         raise InvalidUsage("user with id " + str(user_id) + " not found")
 
@@ -213,14 +227,15 @@ def user_edit():
     if password:
         user.set_password(password)
 
-    user.save(g.db)
+    user.save()
     info('user changed:', user.email)
-    return jsonify({'msg': 'User saved', 'user': user.to_dict()})
+    user_dict = model_to_dict(user)
+    return jsonify({'msg': 'User saved', 'user': user_dict})
 
 @api.route('/user/list', methods=['POST'])
 @require_admin
 def user_list():
-    return get_db_object_list(g.db, db.User)
+    return get_db_object_list(User)
 
 @api.route('/user/remove', methods=['POST'])
 @require_admin
@@ -228,13 +243,13 @@ def user_remove():
     email = request.json.get("username", request.json.get("email"))
     if email is None:
         raise InvalidUsage("email attribute is required")
-    db.User.remove_many(g.db, email=email)
+    User.delete().where(User.email == email).execute()
     info('users deleted:', ', '.join(list(email)))
     return jsonify({'msg': 'User removed', 'email': email})
 
 @api.route('/user/remove_all', methods=['POST'])
 @require_admin
 def user_remove_all():
-    db.User.remove_many(g.db)
+    User.delete().execute()
     info('all users deleted')
     return jsonify({'msg': 'All users removed'})

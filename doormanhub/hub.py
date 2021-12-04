@@ -1,26 +1,20 @@
 import sys
 import os
 import imp
-import threading
-from . import db
+from .db import db, User
 from . import const
-from contextlib import closing
 from flask import Flask, render_template, jsonify, g, redirect, send_from_directory
-from flask_login import current_user
 from .api import action, auth, hardware, log, nfc, utility
-from .api.auth import attempt_auth, require_auth, require_admin
-from .objects import Device, Actor
-from .util import InvalidUsage, getserial, info, debug
+from .api.auth import attempt_auth, require_admin
+from .exceptions import InvalidUsage
+from .util import getserial
+from .logs import debug
 from .version import __version__
 
 app = Flask(__name__, static_url_path='')
 app.config['VERSION'] = __version__
 app.config['MEDIA_DIR'] = 'static'
 app.debug = True
-
-with closing(db.connect(const.db_file)) as thedb:
-    db.init(thedb)
-info('Spiff Hub web interface starting.')
 
 app.register_blueprint(action.api, url_prefix='/api/action/1.0')
 app.register_blueprint(auth.api, url_prefix='/api/auth/1.0')
@@ -67,19 +61,16 @@ def custom400(error):
 
 @app.before_request
 def before_request():
-    g.db = db.connect(const.db_file)
     g.user = None
     attempt_auth()
 
 @app.teardown_request
 def teardown_request(exception):
-    thedb = getattr(g, 'db', None)
-    if thedb is not None:
-        db.close(thedb)
+    db.close()
 
 @app.route('/')
 def login():
-    admin = db.User.get(g.db, is_active=True, is_admin=True)
+    admin = User.get_or_none(User.is_active == True, User.is_admin == True)
     if admin is None:
         return render_template('init.html')
     if g.user:
