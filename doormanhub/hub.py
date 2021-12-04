@@ -16,7 +16,7 @@ app = Flask(__name__, static_url_path='')
 app.config['VERSION'] = __version__
 app.config['MEDIA_DIR'] = 'static'
 app.debug = True
-cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
+cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
 app.register_blueprint(action.api, url_prefix='/api/action/1.0')
 app.register_blueprint(auth.api, url_prefix='/api/auth/1.0')
