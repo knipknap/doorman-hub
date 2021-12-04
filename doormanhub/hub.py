@@ -2,6 +2,7 @@ import os
 import sys
 import importlib
 from flask import Flask, render_template, jsonify, g, redirect, send_from_directory
+from flask_cors import CORS
 from . import const
 from .db import db, User
 from .api import action, auth, hardware, log, nfc, utility
@@ -15,6 +16,7 @@ app = Flask(__name__, static_url_path='')
 app.config['VERSION'] = __version__
 app.config['MEDIA_DIR'] = 'static'
 app.debug = True
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 app.register_blueprint(action.api, url_prefix='/api/action/1.0')
 app.register_blueprint(auth.api, url_prefix='/api/auth/1.0')
