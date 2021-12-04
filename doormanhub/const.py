@@ -16,9 +16,9 @@ session_timeout = timedelta(days=180)
 db_file = os.path.join(__dirname__, 'hub.db')
 static_dir = os.path.join(__dirname__, 'static')
 
-# If MYSQL_HOST is not defined, sqlite will be used.
-mysql_host = os.environ.get('MYSQL_HOST')
-mysql_port = os.environ.get('MYSQL_PORT')
-mysql_db = os.environ.get('MYSQL_DB')
-mysql_user = os.environ.get('MYSQL_USER')
-mysql_password = os.environ.get('MYSQL_PASSWORD')
+# If DB_HOST is not defined, sqlite will be used.
+db_host = os.environ.get('DB_HOST')
+db_port = os.environ.get('DB_PORT')
+db_db = os.environ.get('DB_DB')
+db_user = os.environ.get('DB_USER')
+db_password = os.environ.get('DB_PASSWORD')

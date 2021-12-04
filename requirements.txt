@@ -2,7 +2,7 @@ flask~=2.0
 flask-login~=0.5
 apiclient~=1.0.4
 google-api-python-client~=2.31.0
-PyMySQL~=1.0.2
+psycopg2~=2.9.2
 peewee~=3.14.8
 pyserial~=3.5
 RPi.GPIO~=0.7.0; platform_machine == "armv7l"

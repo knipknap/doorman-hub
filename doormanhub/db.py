@@ -6,12 +6,12 @@ from .util import rand_string, hash_password
 
 # Connect to the database. Gracefully fall back to Sqlite to
 # make things easier to test.
-if const.mysql_host:
-    db = MySQLDatabase(const.mysql_db,
-                       host=const.mysql_host,
-                       port=const.mysql_port,
-                       user=const.mysql_user,
-                       passwd=const.mysql_password)
+if const.db_host:
+    db = PostgresqlDatabase(const.db_db,
+                            host=const.db_host,
+                            port=const.db_port,
+                            user=const.db_user,
+                            passwd=const.db_password)
 else:
     db = SqliteDatabase(const.db_file)
 
