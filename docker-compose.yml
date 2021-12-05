@@ -3,7 +3,7 @@ services:
   app:
     image: knipknap/doorman-hub:latest
     ports:
-      - 80:80
+      - 8888:80
     devices:
       - /dev/gpiomem:/dev/gpiomem
     privileged: true   # otherwise RPI.GPIO refuses to run
