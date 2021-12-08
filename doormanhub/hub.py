@@ -5,7 +5,7 @@ from flask import Flask, render_template, jsonify, g, redirect, send_from_direct
 from flask_cors import CORS
 from . import const
 from .db import db, User
-from .api import action, auth, hardware, info, log, nfc, utility
+from .api import action, auth, hardware, info as infoapi, log, nfc, utility
 from .api.auth import attempt_auth, require_admin
 from .exceptions import InvalidUsage
 from .util import getserial
@@ -18,7 +18,7 @@ app.config['MEDIA_DIR'] = 'static'
 app.debug = True
 cors = CORS(app, resources={r"/*": {"origins": "*"}})
 
-app.register_blueprint(info.api, url_prefix='/api/info/1.0')
+app.register_blueprint(infoapi.api, url_prefix='/api/info/1.0')
 app.register_blueprint(action.api, url_prefix='/api/action/1.0')
 app.register_blueprint(auth.api, url_prefix='/api/auth/1.0')
 app.register_blueprint(hardware.api, url_prefix='/api/hardware/1.0')
