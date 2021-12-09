@@ -1,12 +1,16 @@
-FROM agostof/uwsgi-nginx-flask:latest
-ADD requirements.txt /
+FROM python:3.6-buster
+ENV PYTHONUNBUFFERED 1
 
-RUN touch /app/__init__.py \
+ADD requirements.txt /
+RUN mkdir /app \
+    && touch /app/__init__.py \
     && apt-get update \
     && apt-get -y install software-properties-common \
     && pip install -r /requirements.txt \
     && rm -rf /var/lib/apt/lists/*
 
+WORKDIR /app
 COPY ./doormanhub /app/doormanhub
-COPY ./doormanhub/static /app/static
-COPY ./doormanhub/uwsgi.ini /app
+RUN ln -s doormanhub/static static
+
+CMD sh -c "gunicorn -w 4 -b 0.0.0.0:80 doormanhub:app"
