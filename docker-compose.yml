@@ -19,7 +19,7 @@ services:
       - DB_DB=doorman
       - DB_USER=doorman
       - DB_PASSWORD=doorman-db-password
-    entrypoint: bash -c "while ! exec 6<>/dev/tcp/db/5432; do sleep 2; done; gunicorn -w 1 -b 0.0.0.0:80 doormanhub:app"
+    #entrypoint: sh -c "while ! exec 6<>/dev/tcp/db/5432; do sleep 2; done; gunicorn -w 1 -b 0.0.0.0:80 doormanhub:app"
 
   db:
     image: postgres:14.1
