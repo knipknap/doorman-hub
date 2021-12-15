@@ -11,15 +11,15 @@ except ImportError:
 
 device_name = "GPIO-Relais-Hat"
 
-RELAIS1_PIN = 7
-RELAIS2_PIN = 11
-RELAIS_PINS = [RELAIS1_PIN, RELAIS2_PIN]
+RELAIS1_GPIO = 4
+RELAIS2_GPIO = 17
+RELAIS_GPIOS = [RELAIS1_GPIO, RELAIS2_GPIO]
 
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(RELAIS1_PIN, GPIO.OUT)
-GPIO.setup(RELAIS2_PIN, GPIO.OUT)
-GPIO.output(RELAIS1_PIN, GPIO.LOW)
-GPIO.output(RELAIS2_PIN, GPIO.LOW)
+GPIO.setup(RELAIS1_GPIO, GPIO.OUT)
+GPIO.setup(RELAIS2_GPIO, GPIO.OUT)
+GPIO.output(RELAIS1_GPIO, GPIO.LOW)
+GPIO.output(RELAIS2_GPIO, GPIO.LOW)
 
 """
 Returns a list of tuples representing attached relais devices, using the following logic:
@@ -38,8 +38,8 @@ in which case number_of_relais is None.
 """
 def discover():
     devices = []
-    relais1_on = GPIO.input(RELAIS1_PIN)
-    relais2_on = GPIO.input(RELAIS2_PIN)
+    relais1_on = GPIO.input(RELAIS1_GPIO)
+    relais2_on = GPIO.input(RELAIS2_GPIO)
 
     return [
       (device_name, (relais1_on, relais2_on)),
@@ -47,9 +47,9 @@ def discover():
 
 def switch(device_id, switch_id, on):
     switch_id = int(switch_id)
-    pin = RELAIS_PINS[switch_id - 1]
+    gpio = RELAIS_GPIOS[switch_id - 1]
     status = GPIO.HIGH if on else GPIO.LOW
-    GPIO.output(pin, status)
+    GPIO.output(gpio, status)
     status_str = 'on' if status == GPIO.HIGH else 'off'
     info("{}: Switched relais {} to {}".format(device_name, switch_id, status_str))
 
