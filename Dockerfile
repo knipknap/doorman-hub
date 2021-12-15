@@ -13,4 +13,4 @@ WORKDIR /app
 COPY ./doormanhub /app/doormanhub
 RUN ln -s doormanhub/static static
 
-CMD sh -c "gunicorn -w 4 -b 0.0.0.0:80 doormanhub:app"
+CMD sh -c "gunicorn -w 1 -b 0.0.0.0:80 doormanhub:app"
