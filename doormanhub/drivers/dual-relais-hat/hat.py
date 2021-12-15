@@ -11,15 +11,13 @@ except ImportError:
 
 device_name = "GPIO-Relais-Hat"
 
-RELAIS1_GPIO = 4
-RELAIS2_GPIO = 17
+RELAIS1_GPIO = 15
+RELAIS2_GPIO = 29
 RELAIS_GPIOS = [RELAIS1_GPIO, RELAIS2_GPIO]
 
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(RELAIS1_GPIO, GPIO.OUT)
-GPIO.setup(RELAIS2_GPIO, GPIO.OUT)
-GPIO.output(RELAIS1_GPIO, GPIO.LOW)
-GPIO.output(RELAIS2_GPIO, GPIO.LOW)
+GPIO.setmode(GPIO.BOARD)
+GPIO.setup(RELAIS1_GPIO, GPIO.OUT, initial=GPIO.LOW)
+GPIO.setup(RELAIS2_GPIO, GPIO.OUT, initial=GPIO.LOW)
 
 """
 Returns a list of tuples representing attached relais devices, using the following logic:
