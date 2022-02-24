@@ -71,3 +71,37 @@ docker-compose up
 ```
 
 That's it. The server should be reachable on port 80.
+
+### Load the hub at startup
+
+Put the following into `/etc/systemd/system/doorman-hub.service`:
+
+```
+[Unit]
+Description=Doorman Hub Service
+Requires=docker.service
+After=docker.service
+
+[Service]
+WorkingDirectory=/home/pi
+ExecStart=/usr/bin/docker-compose up
+ExecStop=/usr/bin/docker-compose down
+TimeoutStartSec=0
+Restart=on-failure
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Note that `WorkingDirectory` must point to the directory containing
+the `docker-dompose.yml`.
+
+You can then enable the service and start it:
+
+```
+sudo systemctl enable doorman-hub.service
+sudo systemctl start doorman-hub
+```
+
